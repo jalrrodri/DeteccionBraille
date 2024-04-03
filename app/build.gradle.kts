@@ -13,7 +13,6 @@ plugins {
 android {
     namespace = "com.example.deteccionbraille"
     compileSdk = 34
-
     defaultConfig {
         applicationId = "com.example.deteccionbraille"
         minSdk = 21
@@ -22,6 +21,8 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        //etc
+        vectorDrawables.useSupportLibrary = true
     }
 
     //etc
@@ -70,6 +71,7 @@ dependencies {
 
 
     //etc
+    implementation("androidx.appcompat:appcompat:1.6.1")
     // Kotlin lang
     implementation("androidx.core:core-ktx:1.6.0")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.23")
