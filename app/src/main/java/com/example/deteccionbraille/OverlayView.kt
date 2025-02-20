@@ -6,7 +6,7 @@ package com.example.deteccionbraille
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ *             http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -77,16 +77,16 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
             val left = boundingBox.left * scaleFactor
             val right = boundingBox.right * scaleFactor
 
-            // Draw bounding box around detected objects
+            // Dibujar cuadro delimitador alrededor de los objetos detectados
             val drawableRect = RectF(left, top, right, bottom)
             canvas.drawRect(drawableRect, boxPaint)
 
-            // Create text to display alongside detected objects
+            // Crear texto para mostrar junto a los objetos detectados
             val drawableText =
                 result.categories[0].label + " " +
                         String.format("%.2f", result.categories[0].score)
 
-            // Draw rect behind display text
+            // Dibujar rectángulo detrás del texto
             textBackgroundPaint.getTextBounds(drawableText, 0, drawableText.length, bounds)
             val textWidth = bounds.width()
             val textHeight = bounds.height()
@@ -98,7 +98,7 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
                 textBackgroundPaint
             )
 
-            // Draw text for detected object
+            // Dibujar texto para el objeto detectado
             canvas.drawText(drawableText, left, top + bounds.height(), textPaint)
         }
     }
@@ -110,8 +110,8 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
     ) {
         results = detectionResults
 
-        // PreviewView is in FILL_START mode. So we need to scale up the bounding box to match with
-        // the size that the captured images will be displayed.
+        // La PreviewView está en modo FILL_START. Así que necesitamos escalar el cuadro delimitador para que coincida con
+        // el tamaño en el que se mostrarán las imágenes capturadas.
         scaleFactor = max(width * 1f / imageWidth, height * 1f / imageHeight)
     }
 

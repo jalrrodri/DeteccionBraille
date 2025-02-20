@@ -7,7 +7,7 @@ package com.example.deteccionbraille.fragments
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ *             http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -36,8 +36,8 @@ import kotlinx.coroutines.launch
 private val PERMISSIONS_REQUIRED = arrayOf(Manifest.permission.CAMERA)
 
 /**
- * The sole purpose of this fragment is to request permissions and, once granted, display the
- * camera fragment to the user.
+ * El único propósito de este fragmento es solicitar permisos y, una vez concedidos, mostrar el
+ * fragmento de la cámara al usuario.
  */
 class PermissionsFragment : Fragment() {
 
@@ -45,10 +45,10 @@ class PermissionsFragment : Fragment() {
         registerForActivityResult(ActivityResultContracts.RequestPermission()
         ) { isGranted: Boolean ->
             if (isGranted) {
-                Toast.makeText(context, "Permission request granted", Toast.LENGTH_LONG).show()
+                Toast.makeText(context, "Solicitud de permiso concedida", Toast.LENGTH_LONG).show()
                 navigateToCamera()
             } else {
-                Toast.makeText(context, "Permission request denied", Toast.LENGTH_LONG).show()
+                Toast.makeText(context, "Solicitud de permiso denegada", Toast.LENGTH_LONG).show()
             }
         }
 
@@ -77,7 +77,7 @@ class PermissionsFragment : Fragment() {
     private fun navigateToCamera() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                // Navigation logic within this block
+                // Lógica de navegación dentro de este bloque
                 Navigation.findNavController(requireActivity(), R.id.fragment_container).navigate(
                     PermissionsFragmentDirections.actionPermissionsToCamera()
                 )
@@ -88,7 +88,7 @@ class PermissionsFragment : Fragment() {
 
     companion object {
 
-        /** Convenience method used to check if all permissions required by this app are granted */
+        /** Método de conveniencia utilizado para verificar si se conceden todos los permisos requeridos por esta aplicación */
         fun hasPermissions(context: Context) = PERMISSIONS_REQUIRED.all {
             ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
         }

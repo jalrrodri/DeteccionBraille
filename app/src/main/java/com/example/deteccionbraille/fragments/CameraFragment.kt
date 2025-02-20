@@ -16,16 +16,17 @@ package com.example.deteccionbraille.fragments
  * limitations under the License.
  */
 
-
 import android.annotation.SuppressLint
 import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.os.Bundle
+import android.speech.tts.TextToSpeech
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
+import android.widget.ImageButton
 import android.widget.Toast
 import androidx.camera.core.AspectRatio
 import androidx.camera.core.Camera
@@ -41,12 +42,16 @@ import androidx.navigation.Navigation
 import com.example.deteccionbraille.ObjectDetectorHelper
 import com.example.deteccionbraille.R
 import com.example.deteccionbraille.databinding.FragmentCameraBinding
+import org.tensorflow.lite.task.vision.detector.Detection
 import java.util.LinkedList
+import java.util.Locale
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
-import org.tensorflow.lite.task.vision.detector.Detection
 
 class CameraFragment : Fragment(), ObjectDetectorHelper.DetectorListener {
+
+    //etc
+    private var tts: TextToSpeech? = null
 
     private val TAG = "ObjectDetection"
 
@@ -62,13 +67,13 @@ class CameraFragment : Fragment(), ObjectDetectorHelper.DetectorListener {
     private var camera: Camera? = null
     private var cameraProvider: ProcessCameraProvider? = null
 
-    /** Blocking camera operations are performed using this executor */
+    /** Realizar operaciones de cámara bloqueantes utilizando este executor */
     private lateinit var cameraExecutor: ExecutorService
 
     override fun onResume() {
         super.onResume()
-        // Make sure that all permissions are still present, since the
-        // user could have removed them while the app was in paused state.
+        // Asegurarse de que todos los permisos estén presentes, ya que el
+        // usuario podría haberlos eliminado mientras la aplicación estaba en estado pausado.
         if (!PermissionsFragment.hasPermissions(requireContext())) {
             Navigation.findNavController(requireActivity(), R.id.fragment_container)
                 .navigate(CameraFragmentDirections.actionCameraToPermissions())
@@ -79,7 +84,7 @@ class CameraFragment : Fragment(), ObjectDetectorHelper.DetectorListener {
         _fragmentCameraBinding = null
         super.onDestroyView()
 
-        // Shut down our background executor
+        // Apagar nuestro executor de fondo
         cameraExecutor.shutdown()
     }
 
@@ -93,29 +98,78 @@ class CameraFragment : Fragment(), ObjectDetectorHelper.DetectorListener {
         return fragmentCameraBinding.root
     }
 
+    //etc
+    private lateinit var captureButton: ImageButton
+    private fun captureButtonPressed() {
+        val tempPredictionString = predictionString  // Almacena temporalmente la cadena de predicción
+
+        // Limpiar la cadena de predicción antes de capturar los resultados
+        predictionString = ""
+
+        // Hablar las predicciones si las hay y TTS está inicializado
+        if (tempPredictionString.isNotEmpty() && tts != null) {
+            Log.d(TAG, "Hablando predicción: $tempPredictionString")
+            tts!!.language = Locale("es", "colombia")
+            tts?.speak(tempPredictionString, TextToSpeech.QUEUE_ADD, null, null)
+        } else {
+            Log.d(TAG, "No hay predicciones para hablar o el TTS no está inicializado")
+        }
+    }
+
+    //etc
+
     @SuppressLint("MissingPermission")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        //etc
+        // Initialize captureButton
+        captureButton = view.findViewById(R.id.read_predictions_button)
         objectDetectorHelper = ObjectDetectorHelper(
             context = requireContext(),
-            objectDetectorListener = this)
+            objectDetectorListener = this
+        )
 
-        // Initialize our background executor
+        // Inicializar nuestro executor de fondo
         cameraExecutor = Executors.newSingleThreadExecutor()
 
-        // Wait for the views to be properly laid out
+        // Esperar a que las vistas estén correctamente dispuestas
         fragmentCameraBinding.viewFinder.post {
-            // Set up the camera and its use cases
+            // Configurar la cámara y sus casos de uso
             setUpCamera()
         }
 
-        // Attach listeners to UI control widgets
+        // Adjuntar oyentes a los widgets de control de la IU
         initBottomSheetControls()
+
+        //etc
+        initButton()
+        //etc
     }
 
+    //etc
+    private fun initButton(){
+        captureButton.setOnClickListener {
+            Log.d(TAG, "boton presionado")
+            if (captureButton.isEnabled) {
+                captureButtonPressed()
+            }
+        }
+
+        // Inicializar TextToSpeech
+        tts = TextToSpeech(context) { status ->
+            if (status == TextToSpeech.SUCCESS) {
+                // TTS está listo para ser utilizado
+            } else {
+                Log.e(TAG, "Fallo la inicialización de Text To Speech")
+            }
+        }
+
+    }
+    //etc
+
     private fun initBottomSheetControls() {
-        // When clicked, lower detection score threshold floor
+        // Al hacer clic, disminuir el umbral de puntuación de detección
         fragmentCameraBinding.bottomSheetLayout.thresholdMinus.setOnClickListener {
             if (objectDetectorHelper.threshold >= 0.1) {
                 objectDetectorHelper.threshold -= 0.1f
@@ -123,7 +177,7 @@ class CameraFragment : Fragment(), ObjectDetectorHelper.DetectorListener {
             }
         }
 
-        // When clicked, raise detection score threshold floor
+        // Al hacer clic, aumentar el umbral de puntuación de detección
         fragmentCameraBinding.bottomSheetLayout.thresholdPlus.setOnClickListener {
             if (objectDetectorHelper.threshold <= 0.8) {
                 objectDetectorHelper.threshold += 0.1f
@@ -131,7 +185,7 @@ class CameraFragment : Fragment(), ObjectDetectorHelper.DetectorListener {
             }
         }
 
-        // When clicked, reduce the number of objects that can be detected at a time
+        // Al hacer clic, reducir el número de objetos que pueden ser detectados a la vez
         fragmentCameraBinding.bottomSheetLayout.maxResultsMinus.setOnClickListener {
             if (objectDetectorHelper.maxResults > 1) {
                 objectDetectorHelper.maxResults--
@@ -139,7 +193,7 @@ class CameraFragment : Fragment(), ObjectDetectorHelper.DetectorListener {
             }
         }
 
-        // When clicked, increase the number of objects that can be detected at a time
+        // Al hacer clic, aumentar el número de objetos que pueden ser detectados a la vez
         fragmentCameraBinding.bottomSheetLayout.maxResultsPlus.setOnClickListener {
             if (objectDetectorHelper.maxResults < 5) {
                 objectDetectorHelper.maxResults++
@@ -147,7 +201,7 @@ class CameraFragment : Fragment(), ObjectDetectorHelper.DetectorListener {
             }
         }
 
-        // When clicked, decrease the number of threads used for detection
+        // Al hacer clic, disminuir el número de hilos utilizados para la detección
         fragmentCameraBinding.bottomSheetLayout.threadsMinus.setOnClickListener {
             if (objectDetectorHelper.numThreads > 1) {
                 objectDetectorHelper.numThreads--
@@ -155,7 +209,7 @@ class CameraFragment : Fragment(), ObjectDetectorHelper.DetectorListener {
             }
         }
 
-        // When clicked, increase the number of threads used for detection
+        // Al hacer clic, aumentar el número de hilos utilizados para la detección
         fragmentCameraBinding.bottomSheetLayout.threadsPlus.setOnClickListener {
             if (objectDetectorHelper.numThreads < 4) {
                 objectDetectorHelper.numThreads++
@@ -163,8 +217,8 @@ class CameraFragment : Fragment(), ObjectDetectorHelper.DetectorListener {
             }
         }
 
-        // When clicked, change the underlying hardware used for inference. Current options are CPU
-        // GPU, and NNAPI
+        // Al hacer clic, cambiar el hardware subyacente utilizado para la inferencia. Las opciones actuales son CPU
+        // GPU y NNAPI
         fragmentCameraBinding.bottomSheetLayout.spinnerDelegate.setSelection(0, false)
         fragmentCameraBinding.bottomSheetLayout.spinnerDelegate.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
@@ -174,11 +228,11 @@ class CameraFragment : Fragment(), ObjectDetectorHelper.DetectorListener {
                 }
 
                 override fun onNothingSelected(p0: AdapterView<*>?) {
-                    /* no op */
+                    /* sin operación */
                 }
             }
 
-        // When clicked, change the underlying model used for object detection
+        // Al hacer clic, cambiar el modelo subyacente utilizado para la detección de objetos
         fragmentCameraBinding.bottomSheetLayout.spinnerModel.setSelection(0, false)
         fragmentCameraBinding.bottomSheetLayout.spinnerModel.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
@@ -188,12 +242,12 @@ class CameraFragment : Fragment(), ObjectDetectorHelper.DetectorListener {
                 }
 
                 override fun onNothingSelected(p0: AdapterView<*>?) {
-                    /* no op */
+                    /* sin operación */
                 }
             }
     }
 
-    // Update the values displayed in the bottom sheet. Reset detector.
+    // Actualizar los valores mostrados en la hoja inferior. Restablecer el detector.
     private fun updateControlsUi() {
         fragmentCameraBinding.bottomSheetLayout.maxResultsValue.text =
             objectDetectorHelper.maxResults.toString()
@@ -202,47 +256,47 @@ class CameraFragment : Fragment(), ObjectDetectorHelper.DetectorListener {
         fragmentCameraBinding.bottomSheetLayout.threadsValue.text =
             objectDetectorHelper.numThreads.toString()
 
-        // Needs to be cleared instead of reinitialized because the GPU
-        // delegate needs to be initialized on the thread using it when applicable
+        // Necesita ser borrado en lugar de reinicializado porque la GPU
+        // el delegado necesita ser inicializado en el hilo que lo utiliza cuando corresponde
         objectDetectorHelper.clearObjectDetector()
         fragmentCameraBinding.overlay.clear()
     }
 
-    // Initialize CameraX, and prepare to bind the camera use cases
+    // Inicializar CameraX y prepararse para vincular los casos de uso de la cámara
     private fun setUpCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
         cameraProviderFuture.addListener(
             {
-                // CameraProvider
+                // Proveedor de cámaras
                 cameraProvider = cameraProviderFuture.get()
 
-                // Build and bind the camera use cases
+                // Construir y vincular los casos de uso de la cámara
                 bindCameraUseCases()
             },
             ContextCompat.getMainExecutor(requireContext())
         )
     }
 
-    // Declare and bind preview, capture and analysis use cases
+    // Declarar y vincular casos de uso de vista previa, captura y análisis
     @SuppressLint("UnsafeOptInUsageError")
     private fun bindCameraUseCases() {
 
-        // CameraProvider
+        // Proveedor de cámaras
         val cameraProvider =
-            cameraProvider ?: throw IllegalStateException("Camera initialization failed.")
+            cameraProvider ?: throw IllegalStateException("La inicialización de la cámara falló.")
 
-        // CameraSelector - makes assumption that we're only using the back camera
+        // Selector de cámara: asume que solo estamos usando la cámara trasera
         val cameraSelector =
             CameraSelector.Builder().requireLensFacing(CameraSelector.LENS_FACING_BACK).build()
 
-        // Preview. Only using the 4:3 ratio because this is the closest to our models
+        // Vista previa. Solo usando la relación de aspecto 4:3 porque es la más cercana a nuestros modelos
         preview =
             Preview.Builder()
                 .setTargetAspectRatio(AspectRatio.RATIO_4_3)
                 .setTargetRotation(fragmentCameraBinding.viewFinder.display.rotation)
                 .build()
 
-        // ImageAnalysis. Using RGBA 8888 to match how our models work
+        // Análisis de imágenes. Usando RGBA 8888 para que coincida con cómo funcionan nuestros modelos
         imageAnalyzer =
             ImageAnalysis.Builder()
                 .setTargetAspectRatio(AspectRatio.RATIO_4_3)
@@ -250,12 +304,12 @@ class CameraFragment : Fragment(), ObjectDetectorHelper.DetectorListener {
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                 .setOutputImageFormat(OUTPUT_IMAGE_FORMAT_RGBA_8888)
                 .build()
-                // The analyzer can then be assigned to the instance
+                // El analizador puede entonces asignarse a la instancia
                 .also {
                     it.setAnalyzer(cameraExecutor) { image ->
                         if (!::bitmapBuffer.isInitialized) {
-                            // The image rotation and RGB image buffer are initialized only once
-                            // the analyzer has started running
+                            // La rotación de la imagen y el búfer de imagen RGB se inicializan solo una vez
+                            // que el analizador ha comenzado a ejecutarse
                             bitmapBuffer = Bitmap.createBitmap(
                                 image.width,
                                 image.height,
@@ -267,27 +321,27 @@ class CameraFragment : Fragment(), ObjectDetectorHelper.DetectorListener {
                     }
                 }
 
-        // Must unbind the use-cases before rebinding them
+        // Es necesario desvincular los casos de uso antes de volver a vincularlos
         cameraProvider.unbindAll()
 
         try {
-            // A variable number of use-cases can be passed here -
-            // camera provides access to CameraControl & CameraInfo
+            // Se pueden pasar un número variable de casos de uso aquí -
+            // la cámara proporciona acceso a CameraControl & CameraInfo
             camera = cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageAnalyzer)
 
-            // Attach the viewfinder's surface provider to preview use case
+            // Adjuntar el proveedor de superficie del visor a la vista previa
             preview?.setSurfaceProvider(fragmentCameraBinding.viewFinder.surfaceProvider)
         } catch (exc: Exception) {
-            Log.e(TAG, "Use case binding failed", exc)
+            Log.e(TAG, "La vinculación de casos de uso falló", exc)
         }
     }
 
     private fun detectObjects(image: ImageProxy) {
-        // Copy out RGB bits to the shared bitmap buffer
+        // Copiar los bits RGB al búfer de bitmap compartido
         image.use { bitmapBuffer.copyPixelsFromBuffer(image.planes[0].buffer) }
 
         val imageRotation = image.imageInfo.rotationDegrees
-        // Pass Bitmap and rotation to the object detector helper for processing and detection
+        // Pasar Bitmap y rotación al ayudante de detección de objetos para procesamiento y detección
         objectDetectorHelper.detect(bitmapBuffer, imageRotation)
     }
 
@@ -296,8 +350,11 @@ class CameraFragment : Fragment(), ObjectDetectorHelper.DetectorListener {
         imageAnalyzer?.targetRotation = fragmentCameraBinding.viewFinder.display.rotation
     }
 
-    // Update UI after objects have been detected. Extracts original image height/width
-    // to scale and place bounding boxes properly through OverlayView
+    //etc
+    // Actualizar la IU después de que se hayan detectado objetos. Extrae la altura/ancho de la imagen original
+    // para escalar y colocar correctamente los cuadros delimitadores a través de OverlayView
+    private var predictionString = ""
+
     override fun onResults(
         results: MutableList<Detection>?,
         inferenceTime: Long,
@@ -305,20 +362,34 @@ class CameraFragment : Fragment(), ObjectDetectorHelper.DetectorListener {
         imageWidth: Int
     ) {
         activity?.runOnUiThread {
+            predictionString = ""  // Limpiar la cadena antes de agregar nuevos resultados
+
+            if (results != null) {
+                for (result in results) {
+                    predictionString += result.categories[0].label + ", "
+                }
+            }
+
+            // Eliminar la última coma si hay resultados
+            if (predictionString.isNotEmpty()) {
+                predictionString = predictionString.substring(0, predictionString.length - 2)
+            }
+
             fragmentCameraBinding.bottomSheetLayout.inferenceTimeVal.text =
                 String.format("%d ms", inferenceTime)
 
-            // Pass necessary information to OverlayView for drawing on the canvas
+            // Pasar la información necesaria a OverlayView para dibujar en el lienzo
             fragmentCameraBinding.overlay.setResults(
                 results ?: LinkedList<Detection>(),
                 imageHeight,
                 imageWidth
             )
 
-            // Force a redraw
+            // Forzar un redibujo
             fragmentCameraBinding.overlay.invalidate()
         }
     }
+
 
     override fun onError(error: String) {
         activity?.runOnUiThread {

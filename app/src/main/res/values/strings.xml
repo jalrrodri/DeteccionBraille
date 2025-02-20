@@ -21,6 +21,11 @@
     <string name="label_threads">Cantidad de Hilos</string>
     <string name="label_delegate">Delegado</string>
     <string name="label_models">Modelo ML</string>
+    <string name="content_desc_read_predictions">Boton que activa la funcion de dictado con tts</string>
+    <string name="_2">2</string>
+    <string name="_0ms">0ms</string>
+    <string name="_0_50">0.50</string>
+    <string name="_3">3</string>
 
     <string-array name="delegate_spinner_titles">
         <item>CPU</item>
@@ -33,5 +38,6 @@
         <item>EfficientDet Lite0</item>
         <item>EfficientDet Lite1</item>
         <item>EfficientDet Lite2</item>
+        <item>Braille</item>
     </string-array>
 </resources>

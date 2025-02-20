@@ -16,7 +16,6 @@ package com.example.deteccionbraille
  * limitations under the License.
  */
 
-
 import android.content.Context
 import android.graphics.Bitmap
 import android.os.SystemClock
@@ -39,8 +38,8 @@ class ObjectDetectorHelper(
     val objectDetectorListener: DetectorListener?
 ) {
 
-    // For this example this needs to be a var so it can be reset on changes. If the ObjectDetector
-    // will not change, a lazy val would be preferable.
+    // Para este ejemplo, esto debe ser una var para que pueda restablecerse en los cambios. Si el ObjectDetector
+    // no cambiará, sería preferible un val perezoso.
     private var objectDetector: ObjectDetector? = null
 
     init {
@@ -51,30 +50,30 @@ class ObjectDetectorHelper(
         objectDetector = null
     }
 
-    // Initialize the object detector using current settings on the
-    // thread that is using it. CPU and NNAPI delegates can be used with detectors
-    // that are created on the main thread and used on a background thread, but
-    // the GPU delegate needs to be used on the thread that initialized the detector
+    // Inicializar el detector de objetos usando la configuración actual en el
+    // hilo que lo está utilizando. Los delegados de CPU y NNAPI pueden ser utilizados con detectores
+    // que se crean en el hilo principal y se utilizan en un hilo de fondo, pero
+    // el delegado de GPU debe ser utilizado en el hilo que inicializó el detector
     fun setupObjectDetector() {
-        // Create the base options for the detector using specifies max results and score threshold
+        // Crear las opciones base para el detector usando el número máximo de resultados y el umbral de puntuación especificados
         val optionsBuilder =
             ObjectDetector.ObjectDetectorOptions.builder()
                 .setScoreThreshold(threshold)
                 .setMaxResults(maxResults)
 
-        // Set general detection options, including number of used threads
+        // Establecer opciones generales de detección, incluido el número de hilos utilizados
         val baseOptionsBuilder = BaseOptions.builder().setNumThreads(numThreads)
 
-        // Use the specified hardware for running the model. Default to CPU
+        // Usar el hardware especificado para ejecutar el modelo. Por defecto a CPU
         when (currentDelegate) {
             DELEGATE_CPU -> {
-                // Default
+                // Predeterminado
             }
             DELEGATE_GPU -> {
                 if (CompatibilityList().isDelegateSupportedOnThisDevice) {
                     baseOptionsBuilder.useGpu()
                 } else {
-                    objectDetectorListener?.onError("GPU is not supported on this device")
+                    objectDetectorListener?.onError("La GPU no es compatible con este dispositivo")
                 }
             }
             DELEGATE_NNAPI -> {
@@ -90,6 +89,7 @@ class ObjectDetectorHelper(
                 MODEL_EFFICIENTDETV0 -> "efficientdet-lite0.tflite"
                 MODEL_EFFICIENTDETV1 -> "efficientdet-lite1.tflite"
                 MODEL_EFFICIENTDETV2 -> "efficientdet-lite2.tflite"
+                MODEL_BRAILLE -> "braille.tflite"
                 else -> "mobilenetv1.tflite"
             }
 
@@ -98,9 +98,9 @@ class ObjectDetectorHelper(
                 ObjectDetector.createFromFileAndOptions(context, modelName, optionsBuilder.build())
         } catch (e: IllegalStateException) {
             objectDetectorListener?.onError(
-                "Object detector failed to initialize. See error logs for details"
+                "Falló la inicialización del detector de objetos. Consulte los registros de errores para obtener detalles"
             )
-            Log.e("Test", "TFLite failed to load model with error: " + e.message)
+            Log.e("Test", "TFLite no pudo cargar el modelo con el error: " + e.message)
         }
     }
 
@@ -109,19 +109,19 @@ class ObjectDetectorHelper(
             setupObjectDetector()
         }
 
-        // Inference time is the difference between the system time at the start and finish of the
-        // process
+        // El tiempo de inferencia es la diferencia entre el tiempo del sistema al inicio y al final del
+        // proceso
         var inferenceTime = SystemClock.uptimeMillis()
 
-        // Create preprocessor for the image.
-        // See https://www.tensorflow.org/lite/inference_with_metadata/
+        // Crear preprocesador para la imagen.
+        // Consulte https://www.tensorflow.org/lite/inference_with_metadata/
         //            lite_support#imageprocessor_architecture
         val imageProcessor =
             ImageProcessor.Builder()
                 .add(Rot90Op(-imageRotation / 90))
                 .build()
 
-        // Preprocess the image and convert it into a TensorImage for detection.
+        // Preprocesar la imagen y convertirla en un TensorImage para la detección.
         val tensorImage = imageProcessor.process(TensorImage.fromBitmap(image))
 
         val results = objectDetector?.detect(tensorImage)
@@ -151,5 +151,6 @@ class ObjectDetectorHelper(
         const val MODEL_EFFICIENTDETV0 = 1
         const val MODEL_EFFICIENTDETV1 = 2
         const val MODEL_EFFICIENTDETV2 = 3
+        const val MODEL_BRAILLE = 4
     }
 }
