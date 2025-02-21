@@ -13,6 +13,7 @@
     ~ See the License for the specific language governing permissions and
     ~ limitations under the License.
 -->
+
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/bottom_sheet_layout"
@@ -32,10 +33,21 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <!-- Chevron indicating that the bottom sheet is expandable -->
+        <!-- Chevron que indica que el bottom sheet es expandible -->
         <RelativeLayout
             android:layout_height="wrap_content"
             android:layout_width="match_parent">
+
+
+            <ImageButton
+                android:id="@+id/read_predictions_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"  android:layout_margin="@dimen/read_predictions_button_margin"
+                android:contentDescription="@string/content_desc_read_predictions"
+                android:src="@drawable/ic_read_aloud" />
+
+
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -45,7 +57,7 @@
                 android:contentDescription="@string/alt_bottom_sheet_chevron" />
         </RelativeLayout>
 
-        <!-- Inference time row -->
+        <!-- Fila de tiempo de inferencia -->
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -61,7 +73,7 @@
                 android:textSize="@dimen/bottom_sheet_text_size" />
             <TextView
                 android:id="@+id/inference_time_val"
-                android:text="0ms"
+                android:text="@string/_0ms"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="end"
@@ -70,7 +82,7 @@
                 android:textSize="@dimen/bottom_sheet_text_size" />
         </androidx.appcompat.widget.LinearLayoutCompat>
 
-        <!-- ML confidence threshold adjustment row -->
+        <!-- Fila de ajuste de umbral de confianza de ML -->
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -88,7 +100,7 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
                 >
@@ -108,7 +120,7 @@
                     android:layout_marginRight="@dimen/bottom_sheet_control_text_side_margin"
                     android:gravity="center"
                     android:minEms="@integer/bottom_sheet_control_text_min_ems"
-                    android:text="0.50"
+                    android:text="@string/_0_50"
                     android:textColor="@color/bottom_sheet_text_color"
                     android:textSize="@dimen/bottom_sheet_text_size" />
 
@@ -121,7 +133,7 @@
             </LinearLayout>
         </RelativeLayout>
 
-        <!-- ML max results adjustment row -->
+        <!-- Fila de ajuste máximo de resultados de ML -->
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -140,7 +152,7 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
                 android:gravity="center"
                 android:orientation="horizontal">
                 <androidx.appcompat.widget.AppCompatImageButton
@@ -157,7 +169,7 @@
                     android:gravity="center"
                     android:layout_marginLeft="@dimen/bottom_sheet_control_text_side_margin"
                     android:layout_marginRight="@dimen/bottom_sheet_control_text_side_margin"
-                    android:text="3"
+                    android:text="@string/_3"
                     android:textColor="@color/bottom_sheet_text_color"
                     android:textSize="@dimen/bottom_sheet_text_size" />
                 <androidx.appcompat.widget.AppCompatImageButton
@@ -169,7 +181,7 @@
             </LinearLayout>
         </RelativeLayout>
 
-        <!-- Number of threads adjustment row -->
+        <!-- fila de ajuste de numero de hilos -->
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -207,7 +219,7 @@
                     android:layout_marginRight="@dimen/bottom_sheet_control_text_side_margin"
                     android:gravity="center"
                     android:minEms="@integer/bottom_sheet_control_text_min_ems"
-                    android:text="2"
+                    android:text="@string/_2"
                     android:textColor="@color/bottom_sheet_text_color"
                     android:textSize="@dimen/bottom_sheet_text_size" />
 
@@ -220,7 +232,7 @@
             </LinearLayout>
         </RelativeLayout>
 
-        <!-- Delegate selection row -->
+        <!-- fila de seleccion de delegado -->
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -240,12 +252,12 @@
                 android:minWidth="@dimen/bottom_sheet_spinner_delegate_min_width"
                 android:spinnerMode="dropdown"
                 android:theme="@style/BottomSheetSpinnerItemStyle"
-                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
                 android:entries="@array/delegate_spinner_titles"/>
 
         </RelativeLayout>
 
-        <!-- Model selection row -->
+        <!-- fila de seleccion de modelo -->
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -265,7 +277,7 @@
                 android:minWidth="@dimen/bottom_sheet_spinner_model_min_width"
                 android:spinnerMode="dropdown"
                 android:theme="@style/BottomSheetSpinnerItemStyle"
-                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
                 android:entries="@array/models_spinner_titles"/>
 
         </RelativeLayout>

@@ -65,62 +65,67 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
+    implementation(libs.androidx.core)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
 
     //etc
-    implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation(libs.androidx.appcompat)
     // Kotlin lang
-    implementation("androidx.core:core-ktx:1.6.0")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.23")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.0")
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.kotlin.stdlib.jdk8)
+    implementation(libs.kotlinx.coroutines.android)
 
 // App compat and UI things
-    implementation("androidx.appcompat:appcompat:1.3.1")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.3.1")
-    implementation("androidx.constraintlayout:constraintlayout:2.0.4")
-    implementation("com.google.android.material:material:1.0.0")
-    implementation("androidx.localbroadcastmanager:localbroadcastmanager:1.0.0")
+    implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.constraintlayout)
+    implementation(libs.material)
+    implementation(libs.androidx.localbroadcastmanager)
 
 // Navigation library
-    implementation("androidx.navigation:navigation-fragment-ktx:2.3.5")
-    implementation("androidx.navigation:navigation-ui-ktx:2.3.5")
+    implementation(libs.androidx.navigation.fragment.ktx)
+    implementation(libs.androidx.navigation.ui.ktx)
 
 // CameraX core library
-    implementation("androidx.camera:camera-core:1.1.0-beta03")
+    implementation(libs.camera.core)
 
 // CameraX Camera2 extensions
-    implementation("androidx.camera:camera-camera2:1.1.0-beta03")
+    implementation(libs.camera.camera2)
 
 // CameraX Lifecycle library
-    implementation("androidx.camera:camera-lifecycle:1.1.0-beta03")
+    implementation(libs.camera.lifecycle)
 
 // CameraX View class
-    implementation("androidx.camera:camera-view:1.1.0-beta03")
+    implementation(libs.androidx.camera.view)
 
 // WindowManager
-    implementation("androidx.window:window:1.0.0-alpha09")
+    implementation(libs.androidx.window)
 
 // Unit testing
-    testImplementation("androidx.test.ext:junit:1.1.3")
-    testImplementation("androidx.test:rules:1.4.0")
-    testImplementation("androidx.test:runner:1.4.0")
-    testImplementation("androidx.test.espresso:espresso-core:3.4.0")
-    testImplementation("org.robolectric:robolectric:4.4")
+    testImplementation(libs.androidx.junit)
+    testImplementation(libs.rules)
+    testImplementation(libs.runner)
+    testImplementation(libs.androidx.espresso.core)
+    testImplementation(libs.robolectric)
 
 // Instrumented testing
-    androidTestImplementation("androidx.test.ext:junit:1.1.3")
-    androidTestImplementation("androidx.test:core:1.4.0")
-    androidTestImplementation("androidx.test:rules:1.4.0")
-    androidTestImplementation("androidx.test:runner:1.4.0")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.core)
+    androidTestImplementation(libs.rules)
+    androidTestImplementation(libs.runner)
+    androidTestImplementation(libs.androidx.espresso.core)
 
-    implementation("org.tensorflow:tensorflow-lite-task-vision:0.4.0")
+    implementation(libs.tensorflow.tensorflow.lite.task.vision)
+
 
 // Import the GPU delegate plugin Library for GPU inference
-    implementation("org.tensorflow:tensorflow-lite-gpu-delegate-plugin:0.4.0")
-    implementation("org.tensorflow:tensorflow-lite-gpu:2.9.0")
+    implementation(libs.tensorflow.lite.gpu.delegate.plugin)
+    implementation(libs.tensorflow.lite.gpu)
 
+    //Select TensorFlow op(s)
+    implementation(libs.tensorflow.lite.select.tf.ops)
+    implementation(libs.tensorflow.lite)
 }
